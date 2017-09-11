@@ -97,7 +97,7 @@ cd ${temp_dir}
 mkdir -p release
 
 # Download and extract the .debs
-curl -L ${DEB_DOWNLOAD_URL}
+wget ${DEB_DOWNLOAD_URL}
 archive_name=$(tar tzf glu-9.0.0.tar.gz | sed -e 's@/.*@@' | uniq)
 tar xzf glu-9.0.0.tar.gz
 
