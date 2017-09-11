@@ -25,19 +25,21 @@ echo "set ARCHIVE_NAME ${ARCHIVE_NAME}"
 
 # LibreOffice Dependencies URL
 DEPS_FILE_NAME=libreoffice${VERSION}_x86-64_deps.tar.gz
-echo "set ARCHIVE_NAME ${ARCHIVE_NAME}"
+echo "set DEPS_FILE_NAME ${DEPS_FILE_NAME}"
 DEPS_BUILDPACK_LIBREOFFICE_PACKAGE=https://s3-eu-west-1.amazonaws.com/libreoffice-heroku-buildpack/${DEPS_FILE_NAME}
-echo "set ARCHIVE_NAME ${ARCHIVE_NAME}"
+echo "set DEPS_BUILDPACK_LIBREOFFICE_PACKAGE ${DEPS_BUILDPACK_LIBREOFFICE_PACKAGE}"
 DEPS_ARCHIVE_NAME=app/vendor/libreoffice/deps
-echo "set ARCHIVE_NAME ${ARCHIVE_NAME}"
+echo "set DEPS_ARCHIVE_NAME ${DEPS_ARCHIVE_NAME}"
 
 mkdir -p $CACHE_DIR
-echo "set ARCHIVE_NAME ${ARCHIVE_NAME}"
+echo "makedir CACHE_DIR ${CACHE_DIR}"
+echo "check if ${CACHE_DIR}/${FILE_NAME} does not exist then execute curl on ${BUILDPACK_LIBREOFFICE_PACKAGE} and put it there"
 if ! [ -e $CACHE_DIR/$FILE_NAME ]; then
   echo "-----> LibreOffice: Downloading LibreOffice ${VERSION} binaries from ${BUILDPACK_LIBREOFFICE_PACKAGE}"
   curl -L $BUILDPACK_LIBREOFFICE_PACKAGE -o $CACHE_DIR/$FILE_NAME
 fi
 
+echo "check if ${CACHE_DIR}/${DEPS_FILE_NAME} does not exist then execute curl on ${DEPS_BUILDPACK_LIBREOFFICE_PACKAGE} and put it there"
 if ! [ -e $CACHE_DIR/$DEPS_FILE_NAME ]; then
   echo "-----> LibreOffice: Downloading LibreOffice dependencies (gettext, dbus, libffi, glib, dbus-glib) from ${DEPS_BUILDPACK_LIBREOFFICE_PACKAGE}"
   curl -L $DEPS_BUILDPACK_LIBREOFFICE_PACKAGE -o $CACHE_DIR/$DEPS_FILE_NAME
@@ -45,7 +47,10 @@ fi
 
 echo "-----> LibreOffice: Extracting LibreOffice ${VERSION} binaries to ${BUILD_DIR}/vendor/libreoffice"
 mkdir -p $CACHE_DIR/$ARCHIVE_NAME
+echo "makedir CACHE_DIR/ARCHIVE_NAME ${CACHE_DIR}/${ARCHIVE_NAME}"
+
 mkdir -p $BUILD_DIR/vendor/
+echo "makedir BUILD_DIR/vendor/ ${BUILD_DIR}/vendor/"
 tar xzf $CACHE_DIR/$FILE_NAME -C $CACHE_DIR/$ARCHIVE_NAME
 mv ${CACHE_DIR}/${ARCHIVE_NAME}/opt/libreoffice${MINOR_VERSION} $BUILD_DIR/vendor/libreoffice
 
@@ -92,9 +97,9 @@ cd ${temp_dir}
 mkdir -p release
 
 # Download and extract the .debs
-curl -L ${DEB_DOWNLOAD_URL} -o libreoffice.tar.gz
-archive_name=$(tar tzf libreoffice.tar.gz | sed -e 's@/.*@@' | uniq)
-tar xzf libreoffice.tar.gz
+curl -L ${DEB_DOWNLOAD_URL}
+archive_name=$(tar tzf glu-9.0.0.tar.gz | sed -e 's@/.*@@' | uniq)
+tar xzf glu-9.0.0.tar.gz
 
 cd ${archive_name}
 for f in DEBS/*.deb
